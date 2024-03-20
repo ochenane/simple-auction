@@ -1,23 +1,28 @@
-import { Request, Response } from 'express';
+import { Request, Response, RequestHandler } from 'express';
+import { body, validationResult } from 'express-validator';
 import { expressjwt } from 'express-jwt';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import prisma from '../database';
 import { ApiError } from '.';
 
-const SIGN_ALGORITHM = 'ES256';
+const SIGN_ALGORITHM = 'HS256';
 
 export default class Auth {
-  private secret: string;
+  private constructor() {}
 
-  constructor(secret: string) {
-    this.secret = secret;
-  }
+  static readonly loginValidator = [
+    body('username', 'username should not be empty').not().isEmpty(),
+    body('password', 'password should not be empty').not().isEmpty(),
+  ];
 
-  public async login(
-    req: Request<object, object, LoginRequest>,
-    res: Response<LoginResponse>,
-  ): Promise<void> {
+  static async login(secret: string, req: Request, res: Response) {
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      res.status(400).json({ errors: result.array() });
+      return;
+    }
+    console.log(secret, typeof req, typeof res);
     const user = await prisma.user.findUnique({
       where: { username: req.body.username },
     });
@@ -26,23 +31,30 @@ export default class Auth {
       throw new ApiError(401, 'Invalid username or password');
     }
 
-    const token = jwt.sign(
-      {
-        id: user.id,
-      },
-      this.secret,
-      {
-        expiresIn: '10h', // TODO: read from config
-        algorithm: SIGN_ALGORITHM,
-      },
-    );
+    const token = jwt.sign({ id: user.id }, secret, {
+      expiresIn: '10h', // TODO: read from config
+      algorithm: SIGN_ALGORITHM,
+    });
     res.status(200).json({ success: true, token: token });
   }
 
-  public async register(
-    req: Request<object, object, RegisterRequest>,
-    res: Response<RegisterResponse>,
-  ): Promise<void> {
+  static readonly registerValidator = [
+    body('username', 'username should be at least 4 characters').isLength({
+      min: 4,
+    }),
+    body('username', 'username should be alphanumeric').isAlphanumeric(),
+    body('password', 'password should be at least 6 characters').isLength({
+      min: 6,
+    }),
+    body('repeat', 'repeat should be at least 6 characters').isLength({
+      min: 6,
+    }),
+  ];
+  static async register(req: Request, res: Response) {
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      throw new ApiError(400, 'Invalid input', result.array());
+    }
     if (req.body.password != req.body.repeat) {
       throw new ApiError(400, "Password and repeat don't match");
     }
@@ -53,30 +65,7 @@ export default class Auth {
     res.status(200).json({ success: true });
   }
 
-  public middleware() {
-    return expressjwt({
-      secret: this.secret,
-      algorithms: [SIGN_ALGORITHM],
-    });
+  static protected(secret: string): RequestHandler {
+    return expressjwt({ secret: secret, algorithms: [SIGN_ALGORITHM] });
   }
-}
-
-interface LoginRequest {
-  username: string;
-  password: string;
-}
-
-interface LoginResponse {
-  success: boolean;
-  token?: string;
-}
-
-interface RegisterRequest {
-  username: string;
-  password: string;
-  repeat: string;
-}
-
-interface RegisterResponse {
-  success: boolean;
 }
