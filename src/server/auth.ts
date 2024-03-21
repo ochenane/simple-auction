@@ -12,8 +12,8 @@ export default class Auth {
   private constructor() {}
 
   static readonly loginValidator = [
-    body('username', 'username should not be empty').not().isEmpty(),
-    body('password', 'password should not be empty').not().isEmpty(),
+    body('username', 'username should not be empty').notEmpty(),
+    body('password', 'password should not be empty').notEmpty(),
   ];
 
   static async login(secret: string, req: Request, res: Response) {
@@ -22,7 +22,6 @@ export default class Auth {
       res.status(400).json({ errors: result.array() });
       return;
     }
-    console.log(secret, typeof req, typeof res);
     const user = await prisma.user.findUnique({
       where: { username: req.body.username },
     });

@@ -10,6 +10,10 @@ const config = {
   auth: {
     token: process.env.AUTH_TOKEN ?? '',
   },
+  auction: {
+    private_key: process.env.AUCTION_PRIVATE_KEY ?? '',
+    rpc_url: process.env.AUCTION_RPC_URL ?? '',
+  },
 };
 
 export default config;

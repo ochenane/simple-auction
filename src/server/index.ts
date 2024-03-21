@@ -9,18 +9,22 @@ require('express-async-errors');
 import Auth from './auth';
 import { ValidationError } from 'express-validator';
 import { UnauthorizedError } from 'express-jwt';
+import Auction from '../auction';
+import AuctionHandler from './auction_handler';
 
 export default class Server {
   private app: Express;
   private host: string;
   private port: number;
   private secret: string;
+  private auction: Auction;
 
-  constructor(host: string, port: number, secret: string) {
+  constructor(host: string, port: number, secret: string, auction: Auction) {
     this.app = express();
     this.host = host;
     this.port = port;
     this.secret = secret;
+    this.auction = auction;
   }
 
   public start() {
@@ -57,6 +61,12 @@ export default class Server {
       '/auth/login',
       Auth.loginValidator,
       Auth.login.bind(null, this.secret),
+    );
+
+    this.app.use(
+      '/auction',
+      Auth.protected(this.secret),
+      AuctionHandler.router(this.auction),
     );
   }
 }
