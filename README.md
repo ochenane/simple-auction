@@ -8,8 +8,22 @@ Simple Auction is for handling Auction using Smart Contract
 * The highest bidder wins the auction at the end of the auction time and the amount goes to beneficiary
 
 ## Running
+The whole project can be run using docker-compose (it contains mysql too)
 ```bash
     docker-compose up -d
+```
+
+Just make sure the `.env` file is set properly, there is `sample.env` file to show how it should be provided
+
+It can also be run without docker:
+```bash
+    npm install
+    npm run compile
+    npm run build
+    npm run db:generate
+    npm run db:migrate
+    npm run db:seed
+    npm run start
 ```
 
 #### Note

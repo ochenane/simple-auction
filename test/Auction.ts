@@ -3,7 +3,7 @@ import {
   loadFixture,
 } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
-import hre from 'hardhat';
+import hre, { ethers } from 'hardhat';
 
 describe('Auction', function () {
   async function deployOneYearLockFixture() {
@@ -36,6 +36,34 @@ describe('Auction', function () {
       const { auction } = await loadFixture(deployOneYearLockFixture);
 
       expect(await hre.ethers.provider.getBalance(auction.target)).to.equal(0n);
+    });
+  });
+
+  describe('Bid', function () {
+    it('Should be able to simple bid', async function () {
+      const { auction } = await loadFixture(deployOneYearLockFixture);
+
+      expect(
+        await auction.bid({
+          value: ethers.parseEther('0.1'),
+        }),
+      );
+    });
+
+    it('Should not be able to bid less', async function () {
+      const { auction } = await loadFixture(deployOneYearLockFixture);
+
+      expect(
+        await auction.bid({
+          value: ethers.parseEther('0.1'),
+        }),
+      );
+
+      expect(
+        auction.bid({
+          value: ethers.parseEther('0.01'),
+        }),
+      ).to.be.rejectedWith('There already is a higher bid');
     });
   });
 });
