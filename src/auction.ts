@@ -33,7 +33,6 @@ export default class Auction {
       this.signer,
     );
     const address = await this.signer.getAddress();
-    console.log(address);
     const deployment = await simpleAuction.deploy(biddingTime, address);
     const contract = await deployment.waitForDeployment();
 

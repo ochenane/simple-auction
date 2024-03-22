@@ -5,7 +5,7 @@ import { ApiError } from '.';
 import Auction from '../auction';
 
 export default class AuctionHandler {
-  auction: Auction;
+  private auction: Auction;
 
   private constructor(auction: Auction) {
     this.auction = auction;
@@ -17,13 +17,6 @@ export default class AuctionHandler {
 
     router.get('/:id', handler.idValidator, handler.status.bind(handler));
     router.get('/:id/bids', handler.idValidator, handler.history.bind(handler));
-
-    // TODO: move to admin route
-    router.post(
-      '/create',
-      handler.deployValidator,
-      handler.deploy.bind(handler),
-    );
 
     router.post(
       '/:id/bids/create',
@@ -50,14 +43,6 @@ export default class AuctionHandler {
     );
 
     return router;
-  }
-
-  readonly deployValidator = [
-    param('time', 'time should be number').isNumeric(),
-  ];
-  async deploy(req: Request, res: Response) {
-    const id = await this.auction.deploy(Number(req.body.time));
-    res.status(200).json({ success: true, id });
   }
 
   readonly idValidator = [param('id', 'id should be number').isNumeric()];

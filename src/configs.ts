@@ -9,6 +9,7 @@ const config = {
   },
   auth: {
     token: process.env.AUTH_TOKEN ?? '',
+    time: process.env.AUTH_TIME ?? '10h',
   },
   auction: {
     private_key: process.env.AUCTION_PRIVATE_KEY ?? '',

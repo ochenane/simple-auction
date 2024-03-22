@@ -2,6 +2,7 @@ import Server from './server';
 import config from './configs';
 import prisma from './database';
 import Auction from './auction';
+import User from './user';
 
 async function main() {
   const auction = await Auction.new(
@@ -9,13 +10,15 @@ async function main() {
     config.auction.private_key,
   );
 
-  const server = new Server(
+  const server = new Server();
+  server.start(
     config.server.host,
     config.server.port,
     config.auth.token,
+    config.auth.time,
     auction,
+    new User(),
   );
-  server.start();
 }
 
 main()

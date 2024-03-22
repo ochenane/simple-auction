@@ -10,8 +10,15 @@
     "coverage": "hardhat coverage",
     "deploy": "hardhat deploy",
     "node": "hardhat node",
+    "db:generate": "prisma generate",
+    "db:format": "prisma format",
+    "db:seed": "prisma db seed",
+    "db:migrate": "prisma migrate dev",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
