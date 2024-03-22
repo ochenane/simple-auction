@@ -32,14 +32,14 @@ export default class AuctionHandler {
 
     router.post(
       '/:id/bids/:bidId/withdraw/create',
-      handler.rawBidValidator,
-      handler.rawBid.bind(handler),
+      handler.rawWithdrawValidator,
+      handler.rawWithdraw.bind(handler),
     );
 
     router.post(
       '/:id/bids/:bidId/withdraw/send',
-      handler.bidValidator,
-      handler.bid.bind(handler),
+      handler.withdrawValidator,
+      handler.withdraw.bind(handler),
     );
 
     return router;
@@ -66,7 +66,7 @@ export default class AuctionHandler {
     if (!result.isEmpty()) {
       throw new ApiError(400, 'Invalid input', result.array());
     }
-    const tx = await this.auction.rawBid(req.body.id, req.body.value);
+    const tx = await this.auction.rawBid(Number(req.params.id), req.body.value);
     res.status(200).json({ success: true, tx });
   }
 
@@ -79,16 +79,27 @@ export default class AuctionHandler {
     if (!result.isEmpty()) {
       throw new ApiError(400, 'Invalid input', result.array());
     }
-    await this.auction.bid(req.body.id, req.auth?.id, req.body.tx);
+    await this.auction.bid(
+      Number(req.params.id),
+      Number(req.auth?.id),
+      req.body.tx,
+    );
     res.status(200).json({ success: true });
   }
 
+  readonly rawWithdrawValidator = [
+    param('id', 'id should be number').isNumeric(),
+    body('value', 'value should be number').isNumeric(),
+  ];
   async rawWithdraw(req: Request, res: Response) {
     const result = validationResult(req);
     if (!result.isEmpty()) {
       throw new ApiError(400, 'Invalid input', result.array());
     }
-    const tx = await this.auction.rawWithdraw(req.body.id, req.body.bidId);
+    const tx = await this.auction.rawWithdraw(
+      Number(req.params.id),
+      Number(req.params.bidId),
+    );
     res.status(200).json({ success: true, tx });
   }
 
@@ -103,8 +114,8 @@ export default class AuctionHandler {
       throw new ApiError(400, 'Invalid input', result.array());
     }
     const success = await this.auction.withdraw(
-      req.body.id,
-      req.body.bidId,
+      Number(req.params.id),
+      Number(req.params.bidId),
       req.auth?.id,
       req.body.tx,
     );

@@ -111,7 +111,7 @@ export default class Auction {
     }
 
     // FIXME: note above
-    await this.provider.call(tx);
+    await this.provider.broadcastTransaction(signedTx);
     await prisma.$transaction([
       prisma.bid.create({
         data: {

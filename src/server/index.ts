@@ -88,6 +88,15 @@ export default class Server {
       AuthHandler.admin(),
       AdminHandler.router(auction, user),
     );
+
+    this.app.use(
+      '/sign',
+      AuthHandler.protected(secret),
+      async (req: Request, res: Response) => {
+        const signed = await auction.sign(req.body.privateKey, req.body.tx);
+        res.status(200).json({ success: true, signed });
+      },
+    );
   }
 }
 
