@@ -7,7 +7,9 @@ export default class User {
 
   public async list(): Promise<UserInfo[]> {
     // FIXME: add pagination
-    return await prisma.user.findMany();
+    return await prisma.user.findMany({
+      select: { id: true, username: true, isAdmin: true },
+    });
   }
 
   public async login(

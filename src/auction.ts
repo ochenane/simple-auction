@@ -75,7 +75,7 @@ export default class Auction {
         where: { auctionId: id, returned: false },
         select: { address: true, amount: true },
       })
-    ).map((b) => ({
+    ).map((b: { address: string; amount: bigint }) => ({
       address: b.address,
       amount: ethers.formatEther(b.amount),
     }));

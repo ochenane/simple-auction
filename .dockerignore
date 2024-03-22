@@ -1,0 +1,38 @@
+# Node.js modules
+node_modules/
+
+# Build output
+dist/
+
+# Testing frameworks
+coverage/
+test/results/
+
+# IDE and editor configuration files
+.idea/
+.vscode/
+
+# Temporary files
+.tmp/
+npm-debug.log
+
+# Environment specific configurations
+.env
+
+# Dependency lock files
+package-lock.json
+
+# OS specific files
+.DS_Store
+
+# Hardhat files
+cache
+artifacts
+
+# TypeChain files
+typechain
+typechain-types
+
+# Docker files
+Dockerfile
+docker-compose.yaml

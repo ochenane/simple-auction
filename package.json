@@ -3,8 +3,10 @@
   "version": "0.0.1",
   "author": "Omid Chenane <omid.chenane@gmail.com>",
   "scripts": {
-    "start": "hardhat run ./src/app.ts",
+    "start": "node ./dist/src/app.js",
+    "start-dev": "hardhat run ./src/app.ts",
     "dev": "nodemon ./src/app.ts",
+    "build": "tsc",
     "compile": "hardhat compile",
     "test": "hardhat test",
     "coverage": "hardhat coverage",
@@ -13,7 +15,8 @@
     "db:generate": "prisma generate",
     "db:format": "prisma format",
     "db:seed": "prisma db seed",
-    "db:migrate": "prisma migrate dev",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate": "prisma migrate deploy",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
